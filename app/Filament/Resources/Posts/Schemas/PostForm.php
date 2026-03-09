@@ -34,29 +34,40 @@ public static function configure(Schema $schema): Schema
                     ->schema([
                         Group::make([
                             TextInput::make("title")
+                                ->rules(["required", "min:5", "max:10"])
                                 ->required()
-                                ->minLength(5),
+                                ->validationMessages([
+                                    "required" => "Title must be filled"
+                                ]),
                             TextInput::make("slug")
-                                ->required()
-                                ->unique(table: 'posts', column: 'slug', ignoreRecord: true),
+                                ->rules(["required", "min:3", "max:10"])
+                                ->unique()
+                                ->validationMessages([
+                                    "unique" => "Slug must be unique"
+                                ]),
                             Select::make("category_id")
                                 ->relationship("category", "name")
                                 ->required()
+                                ->validationMessages([
+                                    "required" => "Category must be selected"
+                                ])
                                 ->preload()
                                 ->searchable(),
                             ColorPicker::make("color"),
-                        ])->columns(2), // Membuat field utama menjadi 2 kolom
+                        ])->columns(2), 
                         
                         MarkdownEditor::make("content")
-                            ->columnSpanFull(), // Pastikan konten mengambil lebar penuh
+                            ->columnSpanFull(), 
                     ])->columnSpan(2),
 
-                // Kanan: Upload & Meta (1/3 lebar)
+                
                 Group::make([
+                    // section 2 - image upload
                     Section::make("Image Upload")
                         ->icon("heroicon-o-photo")
                         ->schema([
                             FileUpload::make("image")
+                                ->required()
                                 ->disk("public")
                                 ->directory("posts"),
                         ]),
