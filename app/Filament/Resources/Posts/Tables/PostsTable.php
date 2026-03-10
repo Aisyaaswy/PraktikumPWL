@@ -9,7 +9,6 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ColorColumn;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 
 class PostsTable
@@ -19,15 +18,20 @@ class PostsTable
         return $table
             ->columns([
                 //
-                TextColumn::make("title"),
-                TextColumn::make("slug"),
-                TextColumn::make("category.name"),
+                TextColumn::make("title")
+                    ->sortable(),
+                TextColumn::make("slug")
+                    ->sortable(),
+                TextColumn::make("category.name")
+                    ->sortable(),
                 ColorColumn::make("color"),
                 ImageColumn::make("image")
                 ->disk("public"),
-                IconColumn::make("published")
-                    ->boolean(),
-            ])
+                TextColumn::make("created_at")
+                    ->Label('Created At')
+                    ->dateTime()
+                    ->sortable(),
+            ])->defaultSort("created_at", "asc")
             ->filters([
                 //
             ])
