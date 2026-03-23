@@ -14,6 +14,10 @@ use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Columns\IconColumn; 
+
+use function Laravel\Prompts\text;
+use function Symfony\Component\Translation\t;
 
 class PostsTable
 {
@@ -21,24 +25,40 @@ class PostsTable
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('title')
                     ->sortable()
+                    ->toggleable()
                     ->searchable(),
                 TextColumn::make('slug')
                     ->sortable()
+                    ->toggleable()
                     ->searchable(),
                 TextColumn::make('category.name')
                     ->sortable()
+                    ->toggleable()
                     ->searchable(),
-                ColorColumn::make('color'),
+                ColorColumn::make('color')
+                    ->toggleable(),
                 ImageColumn::make('image')
-                ->disk('public'),
+                    ->toggleable()
+                    ->disk('public'),
                 TextColumn::make('created_at')
                     ->Label('Created At')
+                    ->toggleable()
                     ->dateTime()
                     ->sortable(),
-            ])->defaultSort('created_at', 'asc')
+                TextColumn::make('tags')
+                    ->label('Tags')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('published')
+                    ->boolean()
+                    ->toggleable()
+                    ->label('Published'),
+                    ])->defaultSort('created_at', 'asc')
             ->filters([
                 Filter::make('created_at')
                     ->label('Creation Date Range')
