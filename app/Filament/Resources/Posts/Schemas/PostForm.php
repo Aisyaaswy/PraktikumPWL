@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
+use App\Models\Category;
 use Filament\Forms\Components\Checkbox as ComponentsCheckbox;
 use Filament\Forms\Components\Concerns\CanBeSearchable;
 use Filament\Forms\Components\TextInput;
@@ -47,11 +48,12 @@ public static function configure(Schema $schema): Schema
                                 ]),
                             Select::make("category_id")
                                 ->relationship("category", "name")
+                                ->options(Category::all()->pluck("name", "id"))
                                 ->required()
                                 ->validationMessages([
                                     "required" => "Category must be selected"
                                 ])
-                                ->preload()
+                                // ->preload()
                                 ->searchable(),
                             ColorPicker::make("color"),
                         ])->columns(2), 
