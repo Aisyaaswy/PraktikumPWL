@@ -5,7 +5,9 @@ namespace App\Filament\Resources\Posts\Tables;
 use BladeUI\Icons\Components\Icon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ColorColumn;
@@ -15,6 +17,10 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\IconColumn; 
+use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
 
 use function Laravel\Prompts\text;
 use function Symfony\Component\Translation\t;
@@ -87,8 +93,24 @@ class PostsTable
                     ->preload(),
             ])
             ->recordActions([
+                ReplicateAction::make(),
                 EditAction::make(),
-            ])
+                DeleteAction::make(),
+                Action::make('togglePublish')
+                        ->label(fn (Model $record): string => $record->published ? 'Unpublish' : 'Publish')
+                        ->icon(fn (Model $record): string => $record->published ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                        ->color(fn (Model $record): string => $record->published ? 'danger' : 'success')
+                        ->requiresConfirmation()
+                        ->action(function (Model $record) {
+                            $record->update([
+                                'is_published' => !$record->published,
+                            ]);
+                            Notification::make()
+                                ->title('Status Berhasil Diperbarui')
+                                ->success()
+                                ->send();
+                        }),
+                ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
